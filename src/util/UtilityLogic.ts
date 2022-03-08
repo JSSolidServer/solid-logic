@@ -125,7 +125,7 @@ export class UtilityLogic {
 
   async getContainerMembers(containerUrl: string): Promise<string[]> {
     const containerNode = this.store.sym(containerUrl);
-    await this.store.fetcher?.load(containerNode);
+    await this.store.fetcher?.refresh(containerNode);
     const nodes = this.getContainerElements(containerNode);
     return nodes.map(node => node.value);
   }
@@ -133,8 +133,6 @@ export class UtilityLogic {
   async recursiveDelete(url: string) {
     try {
       if (this.isContainer(url)) {
-        const aclDocUrl = await this.findAclDocUrl(url);
-        await this.fetcher.fetch(aclDocUrl, { method: "DELETE" });
         const containerMembers = await this.getContainerMembers(url);
         await Promise.all(
           containerMembers.map((url) => this.recursiveDelete(url))
