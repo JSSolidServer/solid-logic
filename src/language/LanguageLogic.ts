@@ -4,9 +4,10 @@
 * See https://solidos.solidcommunity.net/public/2021/BuildingSolidAppsUsingPublicData-V3.html
 */
 /* eslint-disable no-console */
-import * as debug from "../debug";
+import * as debug from "../util/debug";
 import { Collection, NamedNode, Node } from 'rdflib'
-import { LiveStore, SolidNamespace, AuthnLogic} from '../index'
+import { LiveStore } from 'rdflib'
+import { AuthnLogic, SolidNamespace } from "../types";
 
 export interface Binding {
   subject: Node;
@@ -36,7 +37,7 @@ export class LanguageLogic {
   async getPreferredLanagugesForOLD(person: NamedNode) {
     const store = this.store
     const ns = this.ns
-    await store.fetcher.load(person.doc())
+    await store.fetcher?.load(person.doc())
     const list = store.any(person, ns.schema('knowsLanguage'), null, person.doc()) as Collection | undefined
     if (!list) {
       console.log(`User ${person} has not set their languages in their profile.`)
