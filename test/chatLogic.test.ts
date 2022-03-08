@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ChatLogic } from "./ChatLogic";
+import { ChatLogic } from "../src/chat/ChatLogic";
 import solidNamespace from "solid-namespace";
-
 import * as rdf from "rdflib";
-import { ProfileLogic } from "../profile/ProfileLogic";
-import fetchMock from "jest-fetch-mock";
+import { ProfileLogic } from "../src/profile/ProfileLogic";
 import { UpdateManager } from "rdflib";
+import { SolidNamespace } from "../src/types";
 
-const ns = solidNamespace(rdf);
+const ns: SolidNamespace = solidNamespace(rdf);
 
 const alice = rdf.sym("https://alice.example/profile/card#me");
 const bob = rdf.sym("https://bob.example/profile/card#me");
@@ -88,16 +87,16 @@ describe("Chat logic", () => {
           "https://alice.example/IndividualChats/bob.example/index.ttl"
         );
         expect(request.body).toBe(`@prefix : <#>.
-@prefix mee: <http://www.w3.org/ns/pim/meeting#>.
-@prefix n0: <http://purl.org/dc/elements/1.1/>.
+@prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix meeting: <http://www.w3.org/ns/pim/meeting#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 @prefix c: </profile/card#>.
-@prefix XML: <http://www.w3.org/2001/XMLSchema#>.
 
 :this
-    a mee:LongChat;
-    n0:author c:me;
-    n0:created "2021-02-06T10:11:12Z"^^XML:dateTime;
-    n0:title "Chat channel".
+    a meeting:LongChat;
+    dc:author c:me;
+    dc:created "2021-02-06T10:11:12Z"^^xsd:dateTime;
+    dc:title "Chat channel".
 `);
       });
       it("allowed Bob to participate in the chat by adding an ACL", () => {
@@ -125,11 +124,10 @@ describe("Chat logic", () => {
       });
       it("sent an invitation to invitee inbox", () => {
         const request = getRequestTo("POST", "https://bob.example/inbox");
-        expect(request.body).toBe(`
+        expect(request.body).toContain(`
 <> a <http://www.w3.org/ns/pim/meeting#LongChatInvite> ;
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#seeAlso> <https://alice.example/IndividualChats/bob.example/index.ttl#this> . 
-  `);
-      });
+<http://www.w3.org/1999/02/22-rdf-syntax-ns#seeAlso> <https://alice.example/IndividualChats/bob.example/index.ttl#this> .
+  `);});
       it("added the new chat to private type index", () => {
         const request = getRequestTo(
           "PATCH",

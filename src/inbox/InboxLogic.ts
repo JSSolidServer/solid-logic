@@ -1,19 +1,7 @@
-import { v4 as uuid } from "uuid";
-import { NamedNode, Node, st, term } from "rdflib";
-import { LiveStore, SolidNamespace } from "../index";
+import { NamedNode, LiveStore } from "rdflib";
 import { ProfileLogic } from "../profile/ProfileLogic";
+import { SolidNamespace } from "../types";
 import { UtilityLogic } from "../util/UtilityLogic";
-import { newThing } from "../uri";
-
-interface NewPaneOptions {
-  me?: NamedNode;
-  newInstance?: NamedNode;
-  newBase: string;
-}
-
-interface CreatedPaneOptions {
-  newInstance: NamedNode;
-}
 
 /**
  * Inbox-related logic
@@ -70,7 +58,7 @@ export class InboxLogic {
     };
     const uploaded = await this.util.fetcher.fetch(archiveUrl, options);
     if (uploaded.status.toString()[0] === '2') {
-      await this.store.fetcher._fetch(url, {
+      await this.store.fetcher?._fetch(url, {
         method: 'DELETE'
       });
     }
