@@ -1,18 +1,12 @@
 /* Logic to access public data stores
 *
 * including filtering resut by natural language etc
-* See https://solidos.solidcommunity.net/public/2021/01%20Building%20Solid%20Apps%20which%20use%20Public%20Data.html
+* See https://solidos.solidcommunity.net/public/2021/BuildingSolidAppsUsingPublicData-V3.html
 */
 /* eslint-disable no-console */
 import * as debug from "../debug";
-import * as logic from '../index'
-import * as authn from '../authn/index'
 import { Collection, NamedNode, Node } from 'rdflib'
 import { LiveStore, SolidNamespace, AuthnLogic} from '../index'
-// import { Binding } from '../widgets/forms/autocomplete/publicData'
-import { nativeNameForLanguageCode, englishNameForLanguageCode } from './nativeNameForLanguageCode'
-
-// const { currentUser } = logic.authn
 
 export interface Binding {
   subject: Node;
@@ -40,19 +34,19 @@ export class LanguageLogic {
   }
 
   async getPreferredLanagugesForOLD(person: NamedNode) {
-    const kb = this.store // 20210506
+    const store = this.store
     const ns = this.ns
-    await kb.fetcher.load(person.doc())
-    const list = kb.any(person, ns.schema('knowsLanguage'), null, person.doc()) as Collection | undefined
+    await store.fetcher.load(person.doc())
+    const list = store.any(person, ns.schema('knowsLanguage'), null, person.doc()) as Collection | undefined
     if (!list) {
       console.log(`User ${person} has not set their languages in their profile.`)
-      return null // differnet from []
+      return null // different from []
     }
     const languageCodeArray: string[] = []
     list.elements.forEach(item => {
-      const lang = kb.any(item as any, ns.solid('publicId'), null, (item as NamedNode).doc())
+      const lang = store.any(item as any, ns.solid('publicId'), null, (item as NamedNode).doc())
       if (!lang) {
-        console.warn('getPreferredLanguages: No publiID of language.')
+        console.warn('getPreferredLanguages: No publicID of language.')
         return
       }
       if (!lang.value.startsWith(languageCodeURIBase)) {
@@ -64,7 +58,7 @@ export class LanguageLogic {
     })
 
     if (languageCodeArray.length > 0) {
-      console.log(`     User knows languages with codes: "${languageCodeArray.join(',')}"`)
+      console.log(`User knows languages with codes: "${languageCodeArray.join(',')}"`)
       return languageCodeArray
     }
     return null
@@ -73,7 +67,7 @@ export class LanguageLogic {
   async getPreferredLanguages () {
     // In future:  cache in the login session for speed, but get from profile and private prefs
     // @@ TEESTING ONLY
-    const kb = this.store
+    const store = this.store
     const me = null; // kb.sym('https://timbl.solidcommunity.net/') //await currentUser() as NamedNode @@
     if (me) { // If logged in
       return this.getPreferredLanagugesForOLD(me) || defaultPreferedLangages
@@ -106,25 +100,26 @@ export async function getPreferredLanagugesForOLD(kb, ns, person) {
   })
 
   if (languageCodeArray.length > 0) {
-    console.log(`     User knows languages with codes: "${languageCodeArray.join(',')}"`)
+    console.log(`User knows languages with codes: "${languageCodeArray.join(',')}"`)
     return languageCodeArray
   }
   return null
 }
 
-export async function getMyPreferredLanguages (kb, ns) {
+export async function getMyPreferredLanguages (store, ns) {
   // In future:  cache in the login session for speed, but get from profile and private prefs
   // @@ TEESTING ONLY
   const me = null; // kb.sym('https://timbl.solidcommunity.net/') //await currentUser() as NamedNode @@
   if (me) { // If logged in
-    return getPreferredLanagugesForOLD(kb, ns, me) || defaultPreferedLangages
+    return getPreferredLanagugesForOLD(store, ns, me) || defaultPreferedLangages
   }
   return defaultPreferedLangages
 }
 
 
-/* From an array of bindings with a names for each row,
- * remove dupliacte names for the same thing, leaving the user's
+/* 
+ * From an array of bindings with a name for each row,
+ * remove duplicate names for the same thing, leaving the user's
  * preferred language version
 */
 
@@ -145,10 +140,10 @@ export function filterByLanguageOLD (bindings, languagePrefs) {
     const sortMe = bindings.map(binding => {
       return [languagePrefs2.indexOf(binding.name['xml:lang']), binding]
     })
-    sortMe.sort() // best at th ebottom
+    sortMe.sort() // best at the bottom
     sortMe.reverse() // best at the top
     slimmed.push((sortMe[0][1] as any))
   } // map u
-  debug.log(` Filter by language: ${bindings.length} -> ${slimmed.length}`)
+  debug.log(`Filter by language: ${bindings.length} -> ${slimmed.length}`)
   return slimmed
 }

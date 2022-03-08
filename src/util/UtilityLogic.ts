@@ -1,21 +1,9 @@
-import { NamedNode, Node, st, term, sym, Statement } from "rdflib";
-import { LiveStore, SolidNamespace } from "../index";
-import { ProfileLogic } from "../profile/ProfileLogic";
-import { newThing } from "../uri";
+import { NamedNode, Statement, sym, LiveStore } from "rdflib";
+import { SolidNamespace } from "../types";
 
 export const ACL_LINK = sym(
   "http://www.iana.org/assignments/link-relations/acl"
 );
-
-interface NewPaneOptions {
-  me?: NamedNode;
-  newInstance?: NamedNode;
-  newBase: string;
-}
-
-interface CreatedPaneOptions {
-  newInstance: NamedNode;
-}
 
 /**
  * Utility-related logic
@@ -33,7 +21,7 @@ export class UtilityLogic {
 
   async findAclDocUrl(url: string) {
     const doc = this.store.sym(url);
-    await this.store.fetcher.load(doc);
+    await this.store.fetcher?.load(doc);
     const docNode = this.store.any(doc, ACL_LINK);
     if (!docNode) {
       throw new Error(`No ACL link discovered for ${url}`);
@@ -137,7 +125,7 @@ export class UtilityLogic {
 
   async getContainerMembers(containerUrl: string): Promise<string[]> {
     const containerNode = this.store.sym(containerUrl);
-    await this.store.fetcher.load(containerNode);
+    await this.store.fetcher?.load(containerNode);
     const nodes = this.getContainerElements(containerNode);
     return nodes.map(node => node.value);
   }
