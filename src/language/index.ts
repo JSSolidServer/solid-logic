@@ -1,4 +1,4 @@
 
-export * from './languageLogic'
+export * from './LanguageLogic'
 export * from './nativeNameForLanguageCode'
 
