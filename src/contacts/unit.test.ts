@@ -7,6 +7,7 @@ import { ProfileLogic } from "../profile/ProfileLogic";
 import fetchMock from "jest-fetch-mock";
 import { UpdateManager } from "rdflib";
 import { ContactsLogic } from "./ContactsLogic";
+import { authSession } from "../authSession/authSession";
 
 const ns = solidNamespace(rdf);
 
@@ -27,9 +28,16 @@ describe("Addressbook", () => {
     store.fetcher = rdf.fetcher(store, fetcher);
     store.updater = new UpdateManager(store);
     const authn = {
+      authSession: authSession,
       currentUser: () => {
         return alice;
       },
+      checkUser: (alice) => {
+        return alice;
+      },
+      saveUser: () => {
+        return alice;
+      }
     };
     const profile = new ProfileLogic(store, ns, authn);
     const util = new UtilityLogic(store, ns, fetcher);

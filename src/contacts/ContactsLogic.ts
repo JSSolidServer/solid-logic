@@ -1,7 +1,10 @@
 import * as rdf from "rdflib"
 import { NamedNode, Node } from "rdflib";
-import { LiveStore, SolidNamespace } from "../index";
+import { SolidNamespace } from "../types";
+import { LiveStore } from "rdflib";
 import solidNamespace from "solid-namespace";
+import { ProfileLogic } from "../profile/ProfileLogic";
+import { UtilityLogic } from "../util/UtilityLogic";
 const ns: SolidNamespace = solidNamespace(rdf);
 
 export class Contact {
@@ -29,7 +32,7 @@ export class Addressbook {
   }
 
   async fetch(): Promise<void> {
-    await this.store.fetcher.load(this.uri.doc().value);
+    await this.store.fetcher?.load(this.uri.doc().value);
   }
 
   getMembers(): Contact[] {
