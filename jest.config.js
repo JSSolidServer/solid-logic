@@ -1,6 +1,12 @@
 module.exports = {
   verbose: true,
-  testEnvironment: 'jsdom',
+  testEnvironment: 'node',
+  globals: {
+    crypto: require('crypto')
+  },
+  moduleNameMapper: {
+    "^jose-node-cjs-runtime/(.*)$": "jose-node-cjs-runtime/dist/node/cjs/$1"
+  },
   testEnvironmentOptions: {
       customExportConditions: ['node']
   },

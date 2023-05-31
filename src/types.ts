@@ -116,6 +116,18 @@ export interface SolidLogic {
     typeIndex: TypeIndexLogic,
     chat: ChatLogic,
     load: (doc: NamedNode | NamedNode[] | string) => void,
+    keys: KeyLogic,
     updatePromise: (del: Array<Statement>, ins: Array<Statement>) => Promise<void>,
     clearStore: () => void
+}
+
+export enum KeyType {
+    PrivateKey = 'PrivateKey',
+    PublicKey = 'PublicKey'
+} 
+export interface KeyLogic {
+    generatePrivateKey: () => string,
+    generatePublicKey: (privateKey: string) => string, 
+    getPrivateKey: (webId: NamedNode) => Promise<string>,
+    getPublicKey: (webId: NamedNode) => Promise<any>
 }

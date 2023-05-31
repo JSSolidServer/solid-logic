@@ -11,6 +11,7 @@ import { createContainerLogic } from "../util/containerLogic";
 import { createUtilityLogic } from "../util/utilityLogic";
 import { AuthnLogic, SolidLogic } from "../types";
 import * as debug from "../util/debug";
+import { createKeyLogic } from "../keys/keyLogic";
 /*
 ** It is important to distinquish `fetch`, a function provided by the browser
 ** and `Fetcher`, a helper object for the rdflib Store which turns it
@@ -34,6 +35,7 @@ export function createSolidLogic(specialFetch: { fetch: (url: any, requestInit: 
     const chat = createChatLogic(store, profile)
     const inbox = createInboxLogic(store, profile, utilityLogic, containerLogic, acl)
     const typeIndex = createTypeIndexLogic(store, authn, profile, utilityLogic)
+    const keys = createKeyLogic(store, utilityLogic)
     debug.log('SolidAuthnLogic initialized')
 
     function load(doc: NamedNode | NamedNode[] | string) {
@@ -68,6 +70,7 @@ export function createSolidLogic(specialFetch: { fetch: (url: any, requestInit: 
         chat,
         profile,
         typeIndex,
+        keys,
         load,
         updatePromise,
         clearStore

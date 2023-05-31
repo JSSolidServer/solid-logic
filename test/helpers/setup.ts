@@ -1,6 +1,11 @@
 import { error, log, trace, warn } from '../../src/util/debug'
 import fetchMock from "jest-fetch-mock";
 import { TextEncoder, TextDecoder } from 'util'
+
+/* @ts-ignore */
+const crypto = require('crypto');
+global.crypto = crypto;
+
 global.TextEncoder = TextEncoder
 global.TextDecoder = TextDecoder
 
